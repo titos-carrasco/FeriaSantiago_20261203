@@ -1,0 +1,167 @@
+#include <ESP8266WiFi.h>
+WiFiClient wifi;
+
+#include <ArduinoJson.h>
+JsonDocument jsonDoc;
+DeserializationError jsonError;
+
+#include <MQTT.h>
+MQTTClient mqtt(1024);
+
+char dht22_temp[] = "+     C";
+char dht22_hume[] = "+     %";
+char dht22_volt[] = "+     V";
+char dht22_date[] = "+01/01/1970 00:00:00";
+
+char mpl3115a2_temp[] = "+      C";
+char mpl3115a2_pres[] = "+      H";
+char mpl3115a2_alti[] = "+      M";
+char mpl3115a2_volt[] = "+      V";
+char mpl3115a2_date[] = "+01/01/1970 00:00:00";
+
+char novapm_25[] = "+      u";
+char novapm_10[] = "+      u";
+char novapm_volt[] = "+      V";
+char novapm_date[] = "+01/01/1970 00:00:00";
+
+#include "MiConfig.h"
+
+char line[40];
+int linePos = 0;
+
+// inicializacion del programa
+void setup() {
+  // puerta serial
+  Serial.begin(300);
+  Serial.flush();
+
+  // wifi
+  WiFi.mode(WIFI_STA);
+  WiFi.setAutoReconnect(true);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+
+  // mqtt
+  mqtt.begin(MQTT_SERVER, MQTT_PORT, wifi);
+  mqtt.onMessage(messageReceived);
+  mqtt.loop();
+  delay(10);
+}
+
+// ciclo de ejecucion
+void loop() {
+  // el comando a ejecutar
+  doCmd();
+
+  // la conexion wifi
+  if (WiFi.status() != WL_CONNECTED) return;
+
+  // la conexion mqtt
+  if (!mqtt.connected()) {
+    if (mqtt.connect(MQTT_CLIENT_ID, MQTT_CLIENT_USER, MQTT_CLIENT_PASS, false)) {
+      mqtt.subscribe(MQTT_TOPIC_MPL3115A2);
+      mqtt.subscribe(MQTT_TOPIC_DHT22);
+      mqtt.subscribe(MQTT_TOPIC_NOVAPM);
+    }
+  }
+
+  mqtt.loop();
+  delay(10);
+}
+
+void doCmd() {
+  int b = Serial.read();
+  if (b < 0) return;
+  if (b != '\r') {
+    line[linePos++] = b;
+    if (linePos == sizeof(line))
+      linePos = 0;
+    return;
+  }
+  line[linePos] = 0;
+  linePos = 0;
+
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.print("-WIFI NO CONECTADA\r");
+    Serial.flush();
+    return;
+  }
+
+  if (!mqtt.connected()) {
+    Serial.print("-MQTT NO CONECTADO\r");
+    Serial.flush();
+    return;
+  }
+
+  if (strcmp(line, "STAT") == 0) {
+    Serial.print("+READY\r");
+    Serial.flush();
+    return;
+  }
+
+  if (strcmp(line, "TEMP") == 0) {
+    Serial.print("+TEMP");
+    Serial.print(dht22_temp);
+    Serial.print(dht22_hume);
+    Serial.print(dht22_volt);
+    Serial.print(dht22_date);
+    Serial.write('\r');
+    Serial.flush();
+    return;
+  }
+
+  if (strcmp(line, "PRES") == 0) {
+    Serial.print("+PRES");
+    Serial.print(mpl3115a2_temp);
+    Serial.print(mpl3115a2_pres);
+    Serial.print(mpl3115a2_alti);
+    Serial.print(mpl3115a2_volt);
+    Serial.print(mpl3115a2_date);
+    Serial.write('\r');
+    Serial.flush();
+    return;
+  }
+
+  if (strcmp(line, "NOVA") == 0) {
+    Serial.print("+NOVA");
+    Serial.print(novapm_25);
+    Serial.print(novapm_10);
+    Serial.print(novapm_volt);
+    Serial.print(novapm_date);
+    Serial.write('\r');
+    Serial.flush();
+    return;
+  }
+
+  Serial.print("-COMANDO INVALIDO\r");
+  Serial.flush();
+}
+
+void messageReceived(String& topic, String& payload) {
+  jsonError = deserializeJson(jsonDoc, payload);
+  if (jsonError) return;
+
+  if (topic.equals(MQTT_TOPIC_DHT22)) {
+    sprintf(dht22_temp, "+%5.1fC", jsonDoc["temperatura"].as<float>());
+    sprintf(dht22_hume, "+%5.1f%%", jsonDoc["humedad"].as<float>());
+    sprintf(dht22_volt, "+%5.1fV", jsonDoc["voltaje"].as<float>());
+    sprintf(dht22_date, "+%19s", jsonDoc["datetime"].as<const char*>());
+    return;
+  }
+
+  if (topic.equals(MQTT_TOPIC_MPL3115A2)) {
+    sprintf(mpl3115a2_temp, "+%6.1fC", jsonDoc["temperatura"].as<float>());
+    sprintf(mpl3115a2_pres, "+%6.1fH", jsonDoc["presion"].as<float>());
+    sprintf(mpl3115a2_alti, "+%6.1fM", jsonDoc["altitud"].as<float>());
+    sprintf(mpl3115a2_volt, "+%6.1fV", jsonDoc["voltaje"].as<float>());
+    sprintf(mpl3115a2_date, "+%19s", jsonDoc["datetime"].as<const char*>());
+    return;
+  }
+
+  if (topic.equals(MQTT_TOPIC_NOVAPM)) {
+    sprintf(novapm_25, "+%6.1fu", jsonDoc["pm25"].as<float>());
+    sprintf(novapm_10, "+%6.1fu", jsonDoc["pm10"].as<float>());
+    sprintf(novapm_volt, "+%6.1fV", jsonDoc["voltaje"].as<float>());
+    sprintf(novapm_date, "+%19s", jsonDoc["datetime"].as<const char*>());
+    return;
+  }
+}
