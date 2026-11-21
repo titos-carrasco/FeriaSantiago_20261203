@@ -10,7 +10,7 @@
 #define MQTT_CLIENT_USER nullptr
 #define MQTT_CLIENT_PASS nullptr
 
-#define MQTT_SERVER "192.168.xxx.yyy"
+#define MQTT_SERVER "10.42.0.1"
 #define MQTT_PORT 1883
 #define MQTT_TOPIC_DHT22 "rcr/demos/dht22"
 #define MQTT_TOPIC_MPL3115A2 "rcr/demos/mpl3115a2"
