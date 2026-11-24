@@ -2,9 +2,11 @@
 ifeq ($(OS),Windows_NT)
 CC65_BIN := E:/Software/cc65/bin
 CC65_INC := E:/Software/cc65/include
+EMULATOR := E:/Software/Commodore/GTK3VICE-3.9-win64/bin/x64sc.exe
 else
 CC65_BIN := /usr/bin
 CC65_INC := /usr/share/cc65/include
+EMULATOR := /usr/bin/x64
 endif
 
 MAKEFLAGS += --warn-undefined-variables
@@ -19,8 +21,9 @@ BUILD_DIR 		:= build
 SRC_DIR   		:= .
 
 # definiciones de lo que generaremos
+DISK_DIR   		:= ../disk
 TARGET			:= csensors
-TARGET_EXE    	:= $(BUILD_DIR)/$(TARGET).prg
+TARGET_EXE    	:= $(DISK_DIR)/$(TARGET).prg
 TARGET_MAP    	:= $(BUILD_DIR)/$(TARGET).map
 TARGET_LABELS 	:= $(BUILD_DIR)/$(TARGET).lbl
 
@@ -64,4 +67,4 @@ clean:
 	rm -fr $(BUILD_DIR)
 
 run: $(TARGET_EXE)
-	x64 $(TARGET_EXE)
+	$(EMULATOR) $(TARGET_EXE)

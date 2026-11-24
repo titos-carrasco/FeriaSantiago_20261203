@@ -1,7 +1,7 @@
 10 close 2: open 2,2,0,chr$(6) + chr$(0)
 15 poke 53280, 0: poke 53281, 0
 20 blank$="                           "
-25 print "{wht}"
+25 print "{grn}"
 
 100 x=0: y=0: gosub 1000
 105 print "{clr}{rvon}  commodore 64 B 300bps B 8n1 B noctrl  {rvof}";
@@ -57,8 +57,8 @@
 
 400 gosub 1100: cmmd$="stat": tj=3*60: gosub 2100
 405 if resp$="+ready" then goto 450
-410 x=10:y=21:gosub 1000: print "respuesta invalida"
-415 tj=2*60: gosub 1200
+410 tj=2*60: gosub 1200
+415 x=10:y=21:gosub 1000: print blank$
 420 goto 400
 
 450 gosub 1100: cmmd$="temp": tj=3*60: gosub 2100
