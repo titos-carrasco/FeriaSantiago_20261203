@@ -93,8 +93,12 @@ void delay_ticks(clock_t ticks)
 
 int check_quit()
 {
-    if (kbhit() && cgetc() == 27)
-        quit = 1;
+    if (kbhit())
+    {
+        unsigned char k = cgetc();
+        if (k == CH_STOP || k == 95 || k == 'q')
+            quit = 1;
+    }
     return quit;
 }
 
