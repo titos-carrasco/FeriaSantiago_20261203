@@ -1,0 +1,7 @@
+CompileFlags:
+  Add:
+    - "-I/usr/share/cc65/include"
+    - "-std=c89"
+    - "-x"
+    - "c"
+    - "-nostdinc"
