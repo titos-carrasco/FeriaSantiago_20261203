@@ -14,4 +14,4 @@ Desplegando datos de sensores desde un C64 y un Atari 800XL
 
 * Controlando un robot de desplazamiento
 
-![Jacob Robot](images/C64-JacobRobot.png)
+![Jacob Robot](images/JacobRobot.png)
