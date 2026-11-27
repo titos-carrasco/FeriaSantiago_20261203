@@ -93,6 +93,23 @@ void doCmd() {
     return;
   }
 
+  if (line[1] == 0) {
+    switch (line[0]) {
+      case 'F':
+      case 'B':
+      case 'L':
+      case 'R':
+      case 'S':
+        {
+          jsonDoc.clear();
+          jsonDoc["cmd"] = (int)(line[0]);
+          serializeJson(jsonDoc, buffer);
+          mqtt.publish(MQTT_TOPIC_ROBOT_CMD, buffer);
+        }
+    }
+    return;
+  }
+
   if (strcmp(line, "STAT") == 0) {
     Serial.print("+READY\r");
     Serial.flush();
@@ -132,14 +149,6 @@ void doCmd() {
     Serial.flush();
     return;
   }
-
-  if (strcmp(line, "F") == 0) {
-    jsonDoc.clear();
-    jsonDoc["cmd"] = line[0];
-    serialize(jsonDoc, buffer);
-    mqtt.publish(MQTT_TOPIC_ROBOT_CMD, buffer);
-  }
-
 
   Serial.print("-COMANDO INVALIDO\r");
   Serial.flush();

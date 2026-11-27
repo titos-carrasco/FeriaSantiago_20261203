@@ -12,8 +12,11 @@
 
 #define MQTT_SERVER "10.42.0.1"
 #define MQTT_PORT 1883
+
 #define MQTT_TOPIC_DHT22 "rcr/demos/dht22"
 #define MQTT_TOPIC_MPL3115A2 "rcr/demos/mpl3115a2"
 #define MQTT_TOPIC_NOVAPM "rcr/demos/novapm"
+#define MQTT_TOPIC_ROBOT_CMD "rcr/demos/jacob/cmd"
+#define MQTT_TOPIC_ROBOT_INFO "rcr/demos/jacob/info"
 
 #endif  // _MI_CONFIG_H
