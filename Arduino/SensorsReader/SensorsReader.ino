@@ -4,6 +4,7 @@ WiFiClient wifi;
 #include <ArduinoJson.h>
 JsonDocument jsonDoc;
 DeserializationError jsonError;
+char buffer[512];
 
 #include <MQTT.h>
 MQTTClient mqtt(1024);
@@ -132,6 +133,14 @@ void doCmd() {
     return;
   }
 
+  if (strcmp(line, "F") == 0) {
+    jsonDoc.clear();
+    jsonDoc["cmd"] = line[0];
+    serialize(jsonDoc, buffer);
+    mqtt.publish(MQTT_TOPIC_ROBOT_CMD, buffer);
+  }
+
+
   Serial.print("-COMANDO INVALIDO\r");
   Serial.flush();
 }
@@ -141,27 +150,27 @@ void messageReceived(String& topic, String& payload) {
   if (jsonError) return;
 
   if (topic.equals(MQTT_TOPIC_DHT22)) {
-    sprintf(dht22_temp+1, "%5.1f", jsonDoc["temperatura"].as<float>());
-    sprintf(dht22_hume+1, "%5.1f", jsonDoc["humedad"].as<float>());
-    sprintf(dht22_volt+1, "%5.1f", jsonDoc["voltaje"].as<float>());
-    sprintf(dht22_date+1, "%19.19s", jsonDoc["datetime"].as<const char*>());
+    sprintf(dht22_temp + 1, "%5.1f", jsonDoc["temperatura"].as<float>());
+    sprintf(dht22_hume + 1, "%5.1f", jsonDoc["humedad"].as<float>());
+    sprintf(dht22_volt + 1, "%5.1f", jsonDoc["voltaje"].as<float>());
+    sprintf(dht22_date + 1, "%19.19s", jsonDoc["datetime"].as<const char*>());
     return;
   }
 
   if (topic.equals(MQTT_TOPIC_MPL3115A2)) {
-    sprintf(mpl3115a2_temp+1, "%6.1f", jsonDoc["temperatura"].as<float>());
-    sprintf(mpl3115a2_pres+1, "%6.1f", jsonDoc["presion"].as<float>());
-    sprintf(mpl3115a2_alti+1, "%6.1f", jsonDoc["altitud"].as<float>());
-    sprintf(mpl3115a2_volt+1, "%6.1f", jsonDoc["voltaje"].as<float>());
-    sprintf(mpl3115a2_date+1, "%19.19s", jsonDoc["datetime"].as<const char*>());
+    sprintf(mpl3115a2_temp + 1, "%6.1f", jsonDoc["temperatura"].as<float>());
+    sprintf(mpl3115a2_pres + 1, "%6.1f", jsonDoc["presion"].as<float>());
+    sprintf(mpl3115a2_alti + 1, "%6.1f", jsonDoc["altitud"].as<float>());
+    sprintf(mpl3115a2_volt + 1, "%6.1f", jsonDoc["voltaje"].as<float>());
+    sprintf(mpl3115a2_date + 1, "%19.19s", jsonDoc["datetime"].as<const char*>());
     return;
   }
 
   if (topic.equals(MQTT_TOPIC_NOVAPM)) {
-    sprintf(novapm_25+1, "%6.1f", jsonDoc["pm25"].as<float>());
-    sprintf(novapm_10+1, "%6.1f", jsonDoc["pm10"].as<float>());
-    sprintf(novapm_volt+1, "%6.1f", jsonDoc["voltaje"].as<float>());
-    sprintf(novapm_date+1, "%19.19s", jsonDoc["datetime"].as<const char*>());
+    sprintf(novapm_25 + 1, "%6.1f", jsonDoc["pm25"].as<float>());
+    sprintf(novapm_10 + 1, "%6.1f", jsonDoc["pm10"].as<float>());
+    sprintf(novapm_volt + 1, "%6.1f", jsonDoc["voltaje"].as<float>());
+    sprintf(novapm_date + 1, "%19.19s", jsonDoc["datetime"].as<const char*>());
     return;
   }
 }
