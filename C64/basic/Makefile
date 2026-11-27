@@ -11,7 +11,7 @@ endif
 
 DISK_DIR   := ../disk
 DISK_D64   := $(DISK_DIR)/feriatic.d64
-DISK_ID := "feriatic,01"
+DISK_ID    := "feriatic,01"
 
 TARGET	   := sensors
 TARGET_SRC := ./$(TARGET).bas
@@ -37,9 +37,6 @@ $(TARGET_PRG): $(TARGET_SRC) | $(DISK_DIR)
 
 $(DISK_DIR):
 	mkdir -p $(DISK_DIR)
-
-clean:
-	rm -f $(TARGET_PRG)
 
 run: $(DISK_D64)
 	$(EMULATOR) -autostart "$(DISK_D64):$(TARGET)"
