@@ -25,12 +25,9 @@ Las imágenes de fondo para el C64 se hiceron con GIMP:
 
 * Resolución de 320x200
 * Modo Indexado: Use black and white (1-bit) palete
+* Fonts en [C64 True Type Fonts](https://style64.org/c64-truetype)
 * Exportar a PNG
 * En [png2c64](https://png2c64.app/):
   * Import el png
   * Modo Hi-Res (320x200)
   * Exportar a HIR
-
-## Acelerador de Carga
-  
-  Trataremos de utilizar [Krill's Loader](https://csdb.dk/release/?id=226124)
