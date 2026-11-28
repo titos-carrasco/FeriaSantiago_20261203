@@ -19,6 +19,10 @@
   * Usar router local
   * Lanzar servicio mosquitto
 
+## Conexión serial en el UserPort
+
+* Información tomada de [Retro Game Coders](https://retrogamecoders.com/commodore-64-wifi-esp8266/)
+
 ## Generación de imágenes HIR para el fondo
 
 Las imágenes de fondo para el C64 se hiceron con GIMP:
